@@ -9,6 +9,8 @@ st.set_option("deprecation.showPyplotGlobalUse", False)
 # st.set_option("runOnSave", True)
 st.set_page_config(layout="wide", page_title="Sorting Visualizer")
 st.title("Sorting Visualizer")
+st.markdown("Made By: Umang Kirit Lodaya ©. [GitHub](https://github.com/Umang-Lodaya/Sorting-Visualizer) | [LinkedIn](https://www.linkedin.com/in/umang-lodaya-074496242/) | [Kaggle](https://www.kaggle.com/umanglodaya)")
+st.markdown("")
 
 
 def getChart(data):
@@ -27,22 +29,26 @@ def getChart(data):
 
 print("\n*****************")
 
-N_COL, R_COL, T_COL = st.columns(3, gap="large")
+N_COL, R_COL = st.columns(2, gap="large")
 with N_COL:
     N = st.slider("Enter the Range of Numbers", 10, 100, 50, 5)
 with R_COL:
     RANGE = st.slider("Enter the Range of Numbers", 1, 1000, [200, 900])
-with T_COL:
-    ALGO = st.selectbox("Algorithm", ["Bubble Sort", "Insertion Sort"])
 
 df = pd.DataFrame([random.randint(*RANGE) for _ in range(N)], columns=["value"])
 colours = [i for i in range(0xF0F00A, 0xF0F0FF)]
 df["colour"] = df.value.apply(lambda x: colours[x // 10])
 df.reset_index(inplace=True)
 
-button = st.button("SORT!")
-st.write("")
-st.write("")
+T_COL, B_COL = st.columns(2, gap="large")
+with T_COL:
+    ALGO = st.selectbox(
+        "Sorting Algorithm", ["Bubble Sort", "Insertion Sort", "Selection Sort"]
+    )
+with B_COL:
+    st.markdown("####")
+    button = st.button("SORT!")
+
 plot_spot = st.empty()
 if button:
     if ALGO == "Bubble Sort":
@@ -69,14 +75,30 @@ if button:
         for i in range(1, N):
             while i > 0 and arr[i - 1] > arr[i]:
                 arr = list(df.value)
-                arr[i-1], arr[i] = arr[i], arr[i-1]
+                arr[i - 1], arr[i] = arr[i], arr[i - 1]
                 i -= 1
                 df.value = arr
                 with plot_spot:
                     df["colour"] = df.value.apply(lambda x: colours[x // 10])
                     st.altair_chart(getChart(df), use_container_width=True)
-                
+
                 time.sleep(1 / N)
+
+    elif ALGO == "Selection Sort":
+        for i in range(N):
+            arr = list(df.value)
+            min_i = i
+            for j in range(i + 1, N):
+                if arr[j] < arr[i]:
+                    min_i = j
+
+            arr[i], arr[j] = arr[j], arr[i]
+            df.value = arr
+            with plot_spot:
+                df["colour"] = df.value.apply(lambda x: colours[x // 10])
+                st.altair_chart(getChart(df), use_container_width=True)
+
+            time.sleep(1 / N)
 
 with plot_spot:
     df["colour"] = df.value.apply(lambda x: colours[x // 10])
