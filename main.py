@@ -36,16 +36,14 @@ with T_COL:
     ALGO = st.selectbox("Algorithm", ["Bubble Sort", "Insertion Sort"])
 
 df = pd.DataFrame([random.randint(*RANGE) for _ in range(N)], columns=["value"])
-df["colour"] = [i for i in range(0xF0F00A, 0xF0F0FF)][:N]
+colours = [i for i in range(0xF0F00A, 0xF0F0FF)]
+df["colour"] = df.value.apply(lambda x: colours[x // 10])
 df.reset_index(inplace=True)
 
 button = st.button("SORT!")
 st.write("")
 st.write("")
 plot_spot = st.empty()
-# with plot_spot:
-    # st.altair_chart(getChart(df), use_container_width=True)
-
 if button:
     if ALGO == "Bubble Sort":
         swapped = False
@@ -57,6 +55,7 @@ if button:
                     arr[j], arr[j + 1] = arr[j + 1], arr[j]
                     df.value = arr
                     with plot_spot:
+                        df["colour"] = df.value.apply(lambda x: colours[x // 10])
                         st.altair_chart(getChart(df), use_container_width=True)
 
                 time.sleep(1 / N)
@@ -74,9 +73,11 @@ if button:
                 i -= 1
                 df.value = arr
                 with plot_spot:
+                    df["colour"] = df.value.apply(lambda x: colours[x // 10])
                     st.altair_chart(getChart(df), use_container_width=True)
                 
                 time.sleep(1 / N)
 
 with plot_spot:
+    df["colour"] = df.value.apply(lambda x: colours[x // 10])
     st.altair_chart(getChart(df), use_container_width=True)
