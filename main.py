@@ -9,7 +9,9 @@ st.set_option("deprecation.showPyplotGlobalUse", False)
 # st.set_option("runOnSave", True)
 st.set_page_config(layout="wide", page_title="Sorting Visualizer")
 st.title("Sorting Visualizer")
-st.markdown("Made By: Umang Kirit Lodaya ©. [GitHub](https://github.com/Umang-Lodaya/Sorting-Visualizer) | [LinkedIn](https://www.linkedin.com/in/umang-lodaya-074496242/) | [Kaggle](https://www.kaggle.com/umanglodaya)")
+st.markdown(
+    "Made By: Umang Kirit Lodaya [GitHub](https://github.com/Umang-Lodaya/Sorting-Visualizer) | [LinkedIn](https://www.linkedin.com/in/umang-lodaya-074496242/) | [Kaggle](https://www.kaggle.com/umanglodaya)"
+)
 st.markdown("")
 
 
@@ -29,29 +31,29 @@ def getChart(data):
 
 print("\n*****************")
 
-N_COL, R_COL = st.columns(2, gap="large")
+N_COL, S_COL = st.columns(2, gap="large")
 with N_COL:
     N = st.slider("Enter the Range of Numbers", 10, 100, 50, 5)
-with R_COL:
-    RANGE = st.slider("Enter the Range of Numbers", 1, 1000, [200, 900])
+with S_COL:
+    SPEED = st.slider("Speed: ", 10, 100, 10)
 
-df = pd.DataFrame([random.randint(*RANGE) for _ in range(N)], columns=["value"])
+df = pd.DataFrame([random.randint(1, 1000) for _ in range(N)], columns=["value"])
 colours = [i for i in range(0xF0F00A, 0xF0F0FF)]
 df["colour"] = df.value.apply(lambda x: colours[x // 10])
 df.reset_index(inplace=True)
 
+ALGORITHMS = ["Bubble Sort", "Insertion Sort", "Selection Sort"]
 T_COL, B_COL = st.columns(2, gap="large")
 with T_COL:
-    ALGO = st.selectbox(
-        "Sorting Algorithm", ["Bubble Sort", "Insertion Sort", "Selection Sort"]
-    )
+    ALGO = st.selectbox("Sorting Algorithm", ALGORITHMS)
 with B_COL:
     st.markdown("####")
     button = st.button("SORT!")
 
 plot_spot = st.empty()
+
 if button:
-    if ALGO == "Bubble Sort":
+    if ALGO == ALGORITHMS[0]:
         swapped = False
         for i in range(N - 1):
             for j in range(0, N - i - 1):
@@ -64,14 +66,13 @@ if button:
                         df["colour"] = df.value.apply(lambda x: colours[x // 10])
                         st.altair_chart(getChart(df), use_container_width=True)
 
-                time.sleep(1 / N)
+                time.sleep(10 / SPEED)
 
             if not swapped:
                 break
 
-    elif "Insertion Sort":
+    elif ALGO == ALGORITHMS[1]:
         arr = list(df.value)
-
         for i in range(1, N):
             while i > 0 and arr[i - 1] > arr[i]:
                 arr = list(df.value)
@@ -82,23 +83,23 @@ if button:
                     df["colour"] = df.value.apply(lambda x: colours[x // 10])
                     st.altair_chart(getChart(df), use_container_width=True)
 
-                time.sleep(1 / N)
+                time.sleep(10 / SPEED)
 
-    elif ALGO == "Selection Sort":
+    elif ALGO == ALGORITHMS[2]:
         for i in range(N):
             arr = list(df.value)
             min_i = i
             for j in range(i + 1, N):
-                if arr[j] < arr[i]:
+                if arr[j] < arr[min_i]:
                     min_i = j
-
-            arr[i], arr[j] = arr[j], arr[i]
+            
+            arr[min_i], arr[i] = arr[i], arr[min_i]
             df.value = arr
             with plot_spot:
                 df["colour"] = df.value.apply(lambda x: colours[x // 10])
                 st.altair_chart(getChart(df), use_container_width=True)
 
-            time.sleep(1 / N)
+            time.sleep(10 / SPEED)
 
 with plot_spot:
     df["colour"] = df.value.apply(lambda x: colours[x // 10])
